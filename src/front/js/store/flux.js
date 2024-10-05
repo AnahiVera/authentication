@@ -1,54 +1,92 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			user: null,
+			access_token: null,
+			signupStatus: null,
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
+			checkCurrentUser: () => {
+				if (sessionStorage.getItem('access_token')) {
+					const user = JSON.parse(sessionStorage.getItem('user'));
+					const access_token = sessionStorage.getItem('access_token');
+					setStore({ user, access_token });
 				}
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+			login: async (credentials) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + '/api/login', {
+						method: 'POST',
+						body: JSON.stringify(credentials),
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					});
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+					const responseJson = await response.json();
+					console.log(responseJson)
+					if (responseJson.status === 'success') {
+						const { user, access_token } = responseJson;
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
+						setStore({ user, access_token });
+						sessionStorage.setItem('access_token', access_token);
+						sessionStorage.setItem('user', JSON.stringify(user));
+					}
+				} catch (error) {
+					console.error('Login error:', error);
+				}
+			},
+			signup: async (credentials) => {
+				try {
+					const response = await fetch(process.env.BACKEND_URL + '/api/signup', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(credentials),
+					});
+					const responseJson = await response.json();
+
+					if (responseJson.status === 'success') {
+						setStore({ signupStatus: responseJson.message });
+						return true;
+					} else {
+						setStore({ signupStatus: responseJson.message });
+						return false;
+					}
+				} catch (error) {
+					console.error('Signup error:', error);
+					setStore({ signupStatus: 'Please try again later' });
+					return false;
+				}
+			},
+			private: async (access_token) => {
+				try {
+					console.log(access_token)
+					const response = await fetch(process.env.BACKEND_URL + '/api/private', {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Bearer ${access_token}`
+						}
+					})
+	
+					const responseJson = await response.json()
+	
+					setStore({ profile: responseJson?.user })
+	
+				} catch (error) {
+					console.log(error.message)
+				}
+			},
+			logout: () => {
+				setStore({ user: null, access_token: null })
+				sessionStorage.removeItem('user')
+				sessionStorage.removeItem('access_token')
+			},
+		},
 	};
 };
+
 
 export default getState;
