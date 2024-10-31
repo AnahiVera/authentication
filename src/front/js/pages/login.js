@@ -31,33 +31,37 @@ export const Login = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 		const resp = await actions.login(credentials)
-		
+
 
 	}
 
 
 	return (
-		<div className="container">
-			<h1>Login</h1>
-			<form onSubmit={handleSubmit}>
+		<div className="container w-50 mt-3">
+			<h1 className="text-center">Login</h1>
+			<form className="my-1" onSubmit={handleSubmit}>
+				<label htmlFor="input" className="form-label ">Email</label>
 				<input
+					className="form-control  my-1"
 					type="email"
 					name="email"
 					id="email"
-					placeholder='email'
+					placeholder='email@example.com'
 					onChange={(e) => dispatch({ type: 'email', value: e.target.value })}
 					value={credentials.email} />
 
+				<label htmlFor="input" className="form-label  my-1">Password</label>
 				<input
+					className="form-control my-1"
 					type="password"
 					name="password"
 					id="password"
-					placeholder='password'
+					placeholder='******'
 					onChange={(e) => dispatch({ type: 'password', value: e.target.value })}
 					value={credentials.password} />
 
 
-				<button type="submit">Login</button>
+				<button className="btn btn-primary my-4 w-100" type="submit">Login</button>
 			</form>
 		</div>
 	);
