@@ -4,6 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			user: null,
 			access_token: null,
 			signupStatus: null,
+			logged: false, 
 		},
 		actions: {
 			checkCurrentUser: () => {
@@ -28,7 +29,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					if (responseJson.status === 'success') {
 						const { user, access_token } = responseJson;
 
-						setStore({ user, access_token });
+						setStore({ user, access_token, logged: true });
 						sessionStorage.setItem('access_token', access_token);
 						sessionStorage.setItem('user', JSON.stringify(user));
 					}
@@ -80,7 +81,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 			logout: () => {
-				setStore({ user: null, access_token: null })
+				setStore({ user: null, access_token: null, logged: false })
 				sessionStorage.removeItem('user')
 				sessionStorage.removeItem('access_token')
 			},

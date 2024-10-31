@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
+import nasa from "./astro1.jpg"
 
 
 export const Private = props => {
@@ -10,21 +11,15 @@ export const Private = props => {
 	const navigate = useNavigate()
 
 
-
 	useEffect(() => {
-        actions?.private(store?.access_token)
-    }, [store?.access_token])
+		if (store?.access_token === null && store.logged === false) navigate('/login')
+	}, [store?.access_token])
 
-    useEffect(() => {
-		if (store?.access_token === null) navigate('/login')
-	}, [store])
+	
 
 	return (
 		<div className="jumbotron">
-			<h1 className="display-4">Private page once login</h1>
-			
-
-	
+			<img src={nasa} className=" w-100" alt="..." />
 		</div>
 	);
 };
