@@ -17,7 +17,7 @@ The Authentication Protect project is a React-based application that implements 
 
 
 ## Prerequisites
-It is recommended to install the backend first, make sure you have Python 3.8, Pipenv and a database engine (Posgress recomended)
+It is recommended to install the backend first, make sure you have Python 3.8, Pipenv and a database engine (Postgress recomended)
 
 ## Execute the project
 
